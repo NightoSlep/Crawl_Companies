@@ -21,7 +21,6 @@ VALID_PREFIX_RANGES = [(32, 39), (76, 79)]  # 032-039, 076-079
 def is_valid_phone(phone: str) -> bool:
     if not phone:
         return False
-    # lấy 3 số đầu
     digits = re.sub(r"\D", "", phone)  # bỏ ký tự không phải số
     if len(digits) < 3:
         return False
@@ -50,7 +49,6 @@ def get_company_details(driver, url):
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(random.uniform(2, 4))
 
-    # Nếu Cloudflare challenge xuất hiện thì chờ xử lý
     page_html = driver.page_source
     if "Checking your browser" in page_html or "cf-browser-verification" in page_html:
         print(f"⚠️ Cloudflare chặn, đợi xử lý...")
