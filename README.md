@@ -44,7 +44,7 @@ WAIT_TABLE_TIMEOUT = 25    # giây chờ bảng chi tiết
 
 RETRY_PER_ITEM = 2         # số lần retry cho mỗi công ty khi lỗi tạm thời
 
-HEADLESS = False           # True để bật chế độ headless
+HEADLESS = False           # True để bật chế độ ẩn chrome (CÓ THỂ CÓ LỖI)
 
 OUTFILE_PREFIX = "Vu"      # tiền tố tên file docx xuất ra
 ```
