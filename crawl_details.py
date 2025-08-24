@@ -28,7 +28,7 @@ DETAIL_FIELDS = {
 
 # Các đầu số hợp lệ
 VALID_PREFIXES = ["096", "097", "098", "090", "093", "089", "086", "070"]
-VALID_PREFIX_RANGES = [(32, 39), (76, 79)]  # 032, 033, 034, ..., 039, và 076, 077, 078, ..., 079
+VALID_PREFIX_RANGES = [(32, 39), (76, 79)]  # 032, 033, ..., 039 và 076, ..., 079
 
 
 def is_valid_phone(phone: str) -> bool:
@@ -53,6 +53,7 @@ def is_valid_phone(phone: str) -> bool:
 
     return False
 
+
 driver_lock = threading.Lock()
 
 def build_driver():
@@ -73,6 +74,7 @@ def build_driver():
     with driver_lock:  # 🔒 khóa khi tạo
         driver = uc.Chrome(options=options, use_subprocess=True)
     return driver
+
 
 def gentle_scroll(driver):
     """Cuộn nhẹ để kích hoạt lazy-load."""
@@ -110,6 +112,11 @@ def parse_details(driver):
         if len(cols) == 2:
             key = cols[0].text.strip()
             val = cols[1].text.strip()
+
+            if key == "Người đại diện" and val:
+                # Chỉ lấy phần tên, bỏ "Ngoài ra ..." đi
+                val = val.split("Ngoài ra")[0].strip()
+
             if key in details:
                 details[key] = val
     return details
@@ -140,9 +147,9 @@ def worker(worker_id: int, q: Queue, results_list: list, results_lock: threading
         driver = build_driver()
         while True:
             try:
-                item = q.get(timeout=2)  # lấy 1 job
+                item = q.get(timeout=2)
             except Empty:
-                break  # hết việc
+                break
 
             idx, company = item
             name = company.get("name", "").strip()
@@ -152,7 +159,7 @@ def worker(worker_id: int, q: Queue, results_list: list, results_lock: threading
                 q.task_done()
                 continue
 
-            print(f"[W{worker_id}] ▶️  ({idx}) Đang lấy: {name}")
+            print(f"[W{worker_id}] ▶️  Đang lấy: {name}")
 
             success = False
             last_err = None
@@ -174,9 +181,7 @@ def worker(worker_id: int, q: Queue, results_list: list, results_lock: threading
                 except Exception as e:
                     last_err = e
                     print(f"[W{worker_id}] ❌ Lỗi {name} (lần {attempt}/{RETRY_PER_ITEM}): {e}")
-                    # In stacktrace ngắn gọn để debug nhanh khi cần:
                     traceback.print_exc(limit=1)
-                    # Thử refresh và đợi ngẫu nhiên trước khi thử lại
                     try:
                         driver.refresh()
                     except Exception:
@@ -186,7 +191,6 @@ def worker(worker_id: int, q: Queue, results_list: list, results_lock: threading
             if not success and last_err:
                 print(f"[W{worker_id}] 🚫 Bỏ qua {name} sau khi retry: {last_err}")
 
-            # Nghỉ giữa các mục để dịu anti-bot
             time.sleep(random.uniform(1.5, 3.5))
             q.task_done()
 
@@ -216,7 +220,7 @@ def export_to_word(items: list, outfile_path: str):
             if value:
                 doc.add_paragraph(f"{field}: {value}")
 
-        doc.add_paragraph("")  # dòng trống ngăn cách
+        doc.add_paragraph("")
 
     doc.save(outfile_path)
 
@@ -239,7 +243,7 @@ def main():
     for i, comp in enumerate(companies, start=1):
         q.put((i, comp))
 
-    # Danh sách kết quả dùng chung + khóa bảo vệ
+    # Danh sách kết quả
     results = []
     results_lock = threading.Lock()
 
@@ -252,12 +256,10 @@ def main():
         t.start()
         workers.append(t)
 
-    # Chờ xong việc
     for t in workers:
         t.join()
 
-    # Xuất kết quả
-    # Lọc bỏ trùng (nếu có) theo 'link'
+    # Xuất kết quả (lọc trùng)
     seen = set()
     deduped = []
     for item in results:
