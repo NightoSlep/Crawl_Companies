@@ -49,7 +49,7 @@ HEADLESS = False           # True để bật chế độ headless
 OUTFILE_PREFIX = "Vu"      # tiền tố tên file docx xuất ra
 ```
 
-## 🚀 4. Chạy script
+## 🚀 4. Chạy script (ĐẶC BIỆT SAU KHI CHẠY SẼ TỰ MỞ CHROME, HÃY CHUYỂN HƯỚNG NGAY KHI CHROME MỞ, NẾU ĐỂ TREO LUÔN SẼ DIE)
 
 ### 4.1 Crawl danh sách công ty ra JSON
 
