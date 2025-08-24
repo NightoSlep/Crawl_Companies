@@ -31,10 +31,22 @@ END_PAGE   = 50       # Trang kết thúc
 BASE_URL = "https://doanhnghiep.biz/dia-diem/binh-duong-717/?p={page}"
 
 KEYWORDS_TO_SKIP = ["DOANH NGHIỆP", "CHI NHÁNH", "HỢP TÁC XÃ"]
+```
 
-KEYWORDS_TO_SKIP → các từ khóa tên công ty muốn bỏ qua.
+Mở crawl_companies.py và sửa các thông số nếu cần:
 
-START_PAGE / END_PAGE → giới hạn số trang cần crawl.
+```bash
+MAX_WORKERS = 5          # số luồng (số Chrome chạy song song). Tùy máy, 2-5 là hợp lý
+
+PAGELOAD_TIMEOUT = 45      # giây chờ trang
+
+WAIT_TABLE_TIMEOUT = 25    # giây chờ bảng chi tiết
+
+RETRY_PER_ITEM = 2         # số lần retry cho mỗi công ty khi lỗi tạm thời
+
+HEADLESS = False           # True để bật chế độ headless
+
+OUTFILE_PREFIX = "Vu"      # tiền tố tên file docx xuất ra
 ```
 
 ## 🚀 4. Chạy script

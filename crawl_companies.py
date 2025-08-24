@@ -4,13 +4,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-BASE_URL = "https://doanhnghiep.biz/dia-diem/tp-ho-chi-minh-701/?p={page}"
-
 START_PAGE = 350
 END_PAGE = 360
 
+BASE_URL = "https://doanhnghiep.biz/dia-diem/tp-ho-chi-minh-701/?p={page}"
+
 # Danh sách từ khóa tên công ty cần bỏ qua
-KEYWORDS_TO_SKIP = ["DOANH NGHIỆP", "CHI NHÁNH", "HỢP TÁC XÃ"]
+KEYWORDS_TO_SKIP = ["DOANH NGHIỆP", "CHI NHÁNH", "HỢP TÁC XÃ", "VĂN PHÒNG"]
 
 
 def get_company_links(driver, page=1):
