@@ -7,14 +7,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # ====== Cấu hình ======
-START_PAGE = x
-END_PAGE = x
+START_PAGE = 80
+END_PAGE = 83
+
 MAX_WORKERS = 5   # số luồng chạy song song
 HEADLESS = False  # True để ẩn chrome (CÓ THỂ LỖI)
 OUTFILE = "companies.json"
 # ======================
 
-BASE_URL = "https://doanhnghiep.biz/dia-diem/tp-ho-chi-minh-701/?p={page}"
+BASE_URL = "https://doanhnghiep.biz/dia-diem/binh-duong-711/?p={page}"
 
 # Danh sách từ khóa tên công ty cần bỏ qua
 KEYWORDS_TO_SKIP = ["DOANH NGHIỆP", "CHI NHÁNH", "HỢP TÁC XÃ", "VĂN PHÒNG"]
@@ -22,7 +23,6 @@ KEYWORDS_TO_SKIP = ["DOANH NGHIỆP", "CHI NHÁNH", "HỢP TÁC XÃ", "VĂN PHÒ
 driver_lock = threading.Lock()
 
 def build_driver():
-    """Khởi tạo 1 Chrome driver mới cho từng luồng."""
     options = uc.ChromeOptions()
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--disable-infobars")
@@ -37,7 +37,7 @@ def build_driver():
         options.add_argument("--disable-gpu")
         options.add_argument("--window-size=1920,1080")
 
-    with driver_lock:  # tránh race condition khi khởi tạo
+    with driver_lock:
         driver = uc.Chrome(options=options, use_subprocess=True)
     return driver
 
@@ -140,7 +140,6 @@ def main():
         json.dump(results, f, ensure_ascii=False, indent=2)
 
     print(f"✅ Đã lưu {len(results)} công ty hợp lệ vào {OUTFILE}")
-
 
 if __name__ == "__main__":
     main()
