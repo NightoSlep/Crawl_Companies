@@ -22,7 +22,7 @@ OUTFILE_PREFIX = "Vu"    # tiền tố tên file docx xuất ra
 # ======================
 
 DETAIL_FIELDS = {
-    "Ngày cấp": "Ngày cấp",
+    "Số ĐKKD/MST": "Số ĐKKD/MST",
     "Ngày hoạt động": "Ngày hoạt động",
     "Tình trạng": "Tình trạng",
     "Địa chỉ": "Địa chỉ",
@@ -300,6 +300,12 @@ def export_to_word(items: list, outfile_path: str):
         doc.add_paragraph("")
     doc.save(outfile_path)
 
+def normalize_phone(phone: str) -> str:
+    """Chuẩn hóa số điện thoại: giữ lại chỉ chữ số."""
+    if not phone:
+        return ""
+    return re.sub(r"\D", "", phone)
+
 def main():
     try:
         with open("companies.json", "r", encoding="utf-8") as f:
@@ -331,14 +337,23 @@ def main():
         t.join()
 
     # loại trùng
-    seen = set()
+    seen_links = set()
+    seen_phones = set()
     deduped = []
     for item in results:
-        key = item.get("link") or item.get("name")
-        if key and key not in seen:
-            seen.add(key)
-            deduped.append(item)
+        phone_norm = normalize_phone(item.get("Điện thoại"))
+        link = item.get("link")
+        name = item.get("name")
 
+        key = link or name
+        if key and key in seen_links:
+            continue
+        if key:
+            seen_links.add(key)
+        if phone_norm:
+            seen_phones.add(phone_norm)
+        deduped.append(item)
+        
     today = datetime.datetime.now().strftime("%d.%m")
     outfile = f"{OUTFILE_PREFIX}.{today}.docx"
     export_to_word(deduped, outfile)

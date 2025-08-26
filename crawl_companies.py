@@ -7,8 +7,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # ====== Cấu hình ======
-START_PAGE = 80
-END_PAGE = 83
+START_PAGE = 1
+END_PAGE = 3
 
 MAX_WORKERS = 5   # số luồng chạy song song
 HEADLESS = False  # True để ẩn chrome (CÓ THỂ LỖI)
