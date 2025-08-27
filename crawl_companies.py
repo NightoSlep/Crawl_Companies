@@ -41,7 +41,6 @@ def build_driver():
         driver = uc.Chrome(options=options, use_subprocess=True)
     return driver
 
-
 def get_company_links(driver, page=1):
     """Lấy danh sách công ty từ 1 trang."""
     url = BASE_URL.format(page=page)
@@ -78,7 +77,6 @@ def get_company_links(driver, page=1):
     print(f"Trang {page} -> Tìm thấy {len(companies)} công ty (sau khi lọc từ khóa)")
     return companies
 
-
 def worker(worker_id: int, q: Queue, results: list, results_lock: threading.Lock):
     """Luồng worker: lấy page từ queue, crawl công ty và lưu vào results."""
     driver = None
@@ -110,7 +108,6 @@ def worker(worker_id: int, q: Queue, results: list, results_lock: threading.Lock
             except:
                 pass
         print(f"[W{worker_id}] 🔚 Đã đóng driver.")
-
 
 def main():
     # Tạo hàng đợi

@@ -106,6 +106,13 @@ def parse_details(driver):
     details = {field: None for field in DETAIL_FIELDS}
 
     try:
+        tax_id = driver.find_element(By.CSS_SELECTOR, "td[itemprop='taxID']").text.strip()
+        if tax_id:
+            details["Số ĐKKD/MST"] = tax_id
+    except:
+        pass
+    
+    try:
         addr = driver.find_element(
             By.CSS_SELECTOR, "table.company-table td[itemprop='address']"
         ).text.strip()
@@ -144,7 +151,6 @@ def parse_details(driver):
                 details[key] = val
 
     return details
-
 
 def get_company_details(driver, url):
     driver.get(url)
