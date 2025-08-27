@@ -19,6 +19,10 @@ Chạy các lệnh sau trong terminal:
 pip install undetected-chromedriver selenium beautifulsoup4 python-docx
 ```
 
+```
+pip install setuptools
+```
+
 ## 📝 3. Cấu hình script
 
 Mở crawl_companies.py và sửa các thông số nếu cần:
@@ -49,7 +53,7 @@ HEADLESS = False           # True để bật chế độ ẩn chrome (CÓ THỂ
 OUTFILE_PREFIX = "Vu"      # tiền tố tên file docx xuất ra
 ```
 
-## 🚀 4. Chạy script (ĐẶC BIỆT SAU KHI CHẠY SẼ TỰ MỞ CHROME, HÃY CHUYỂN HƯỚNG NGAY KHI CHROME MỞ, NẾU ĐỂ TREO LUÔN SẼ DIE)
+## 🚀 4. Chạy script (ĐẶC BIỆT SAU KHI CHẠY SẼ TỰ MỞ CHROME, HÃY CHUYỂN HƯỚNG NẾU MÁY YẾU)
 
 ### 4.1 Crawl danh sách công ty ra JSON
 
