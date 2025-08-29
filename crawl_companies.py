@@ -7,15 +7,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 # ====== Cấu hình ======
-START_PAGE = 1
-END_PAGE = 3
+START_PAGE = 60
+END_PAGE = 80
 
 MAX_WORKERS = 5   # số luồng chạy song song
 HEADLESS = False  # True để ẩn chrome (CÓ THỂ LỖI)
 OUTFILE = "companies.json"
 # ======================
 
-BASE_URL = "https://doanhnghiep.biz/dia-diem/binh-duong-711/?p={page}"
+BASE_URL = "https://doanhnghiep.biz/dia-diem/long-an-801/?p={page}"
 
 # Danh sách từ khóa tên công ty cần bỏ qua
 KEYWORDS_TO_SKIP = ["DOANH NGHIỆP", "CHI NHÁNH", "HỢP TÁC XÃ", "VĂN PHÒNG"]

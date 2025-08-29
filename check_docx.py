@@ -29,5 +29,5 @@ def find_duplicate_companies(docx_path):
 
 
 if __name__ == "__main__":
-    docx_file = "Vu.24.086.docx"  # 👉 đổi thành file Word của bạn
+    docx_file = "Vu.28.08.docx"  # 👉 đổi thành file Word của bạn
     find_duplicate_companies(docx_file)

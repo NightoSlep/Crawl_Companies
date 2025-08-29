@@ -1,4 +1,4 @@
-import json, time, random, datetime, re, sys, traceback
+import json, time, random, datetime, re, sys, traceback, os
 import threading
 from queue import Queue, Empty
 
@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from docx import Document
-from docx.shared import Pt, Cm
+from docx.shared import Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -31,8 +31,8 @@ DETAIL_FIELDS = {
 }
 
 # Các đầu số hợp lệ
-VALID_PREFIXES = ["096", "097", "098", "090", "093", "089", "086", "070"]
-VALID_PREFIX_RANGES = [(32, 39), (76, 79)]  # 032..039 và 076..079
+VALID_PREFIXES = ["090", "093", "089", "070"]
+VALID_PREFIX_RANGES = [(76, 79)]  # 032..039 và 076..079
 
 def is_valid_phone(phone: str) -> bool:
     """Lọc số ĐT theo đầu số cho phép."""
@@ -111,7 +111,7 @@ def parse_details(driver):
             details["Số ĐKKD/MST"] = tax_id
     except:
         pass
-    
+
     try:
         addr = driver.find_element(
             By.CSS_SELECTOR, "table.company-table td[itemprop='address']"
@@ -165,21 +165,6 @@ def get_company_details(driver, url):
                 "table.company-table td[itemprop='address'], "
                 "table.company-table tr[itemprop='Owner']"
             ))
-        )
-    except Exception:
-        print("❌ Không thấy bảng chi tiết.")
-        return {field: None for field in DETAIL_FIELDS}
-
-    return parse_details(driver)
-
-    driver.get(url)
-    time.sleep(random.uniform(1.5, 3.0))
-    gentle_scroll(driver)
-    cloudflare_guard(driver)
-
-    try:
-        WebDriverWait(driver, WAIT_TABLE_TIMEOUT).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "table"))
         )
     except Exception:
         print("❌ Không thấy bảng chi tiết.")
@@ -256,27 +241,6 @@ def worker(worker_id: int, q: Queue, results_list: list, results_lock: threading
                 pass
         print(f"[W{worker_id}] 🔚 Đã đóng driver.")
 
-def add_page_number(paragraph):
-    """Thêm field PAGE vào paragraph (page number tự động)."""
-    run = paragraph.add_run()
-    fldChar1 = OxmlElement('w:fldChar')
-    fldChar1.set(qn('w:fldCharType'), 'begin')
-
-    instrText = OxmlElement('w:instrText')
-    instrText.set(qn('xml:space'), 'preserve')
-    instrText.text = "PAGE"
-
-    fldChar2 = OxmlElement('w:fldChar')
-    fldChar2.set(qn('w:fldCharType'), 'separate')
-
-    fldChar3 = OxmlElement('w:fldChar')
-    fldChar3.set(qn('w:fldCharType'), 'end')
-
-    run._r.append(fldChar1)
-    run._r.append(instrText)
-    run._r.append(fldChar2)
-    run._r.append(fldChar3)
-
 def export_to_word(items: list, outfile_path: str):
     """Xuất kết quả ra Word với định dạng chuẩn."""
     doc = Document()
@@ -312,6 +276,15 @@ def normalize_phone(phone: str) -> str:
         return ""
     return re.sub(r"\D", "", phone)
 
+def generate_word_filename(prefix="Vu"):
+    today = datetime.datetime.now().strftime("%d.%m")
+    i = 1
+    while True:
+        filename = f"{prefix}.{today}.{i}.docx"
+        if not os.path.exists(filename):
+            return filename
+        i += 1
+
 def main():
     try:
         with open("companies.json", "r", encoding="utf-8") as f:
@@ -344,10 +317,8 @@ def main():
 
     # loại trùng
     seen_links = set()
-    seen_phones = set()
     deduped = []
     for item in results:
-        phone_norm = normalize_phone(item.get("Điện thoại"))
         link = item.get("link")
         name = item.get("name")
 
@@ -356,12 +327,9 @@ def main():
             continue
         if key:
             seen_links.add(key)
-        if phone_norm:
-            seen_phones.add(phone_norm)
         deduped.append(item)
-        
-    today = datetime.datetime.now().strftime("%d.%m")
-    outfile = f"{OUTFILE_PREFIX}.{today}.docx"
+
+    outfile = generate_word_filename(OUTFILE_PREFIX)
     export_to_word(deduped, outfile)
 
     print(f"✅ Hoàn tất! Tổng hợp {len(deduped)}/{len(companies)} mục hợp lệ.")
