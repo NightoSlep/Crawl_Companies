@@ -32,7 +32,7 @@ DETAIL_FIELDS = {
 
 # Các đầu số hợp lệ
 VALID_PREFIXES = ["090", "093", "089", "070"]
-VALID_PREFIX_RANGES = [(76, 79)]  # 032..039 và 076..079
+VALID_PREFIX_RANGES = [(32, 39), (76, 79)]  # 032..039 và 076..079
 
 def is_valid_phone(phone: str) -> bool:
     """Lọc số ĐT theo đầu số cho phép."""
